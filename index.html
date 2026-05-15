@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Platform - My Project</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body { background-color: #f4f8fc; color: #333; }
+        a { color: inherit; text-decoration: none; }
+        
+        /* Login / Signup cards */
+        .page-center { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .card { background-color: #fff; width: 100%; max-width: 380px; padding: 28px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .card h1 { text-align: center; margin-bottom: 20px; font-size: 24px; color: #2a5f8a; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px 12px; border: 1px solid #cfd8e3; border-radius: 6px; }
+        .btn { display: inline-block; width: 100%; padding: 10px 12px; border: none; border-radius: 6px; background-color: #9fd3fb; color: #183247; font-weight: 700; cursor: pointer; text-align: center; }
+        .btn:hover { background-color: #8bc5f1; }
+        .auth-link { margin-top: 14px; text-align: center; font-size: 14px; color: #4a5f72; }
+        .auth-link a { color: #2a5f8a; font-weight: 600; cursor: pointer; }
+        
+        /* Dashboard layout */
+        .navbar { height: 60px; background-color: #fff; border-bottom: 1px solid #dce5ef; display: flex; align-items: center; padding: 0 20px; }
+        .navbar h1 { font-size: 22px; color: #2a5f8a; }
+        .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 60px); }
+        .sidebar { background-color: #eef4fa; border-right: 1px solid #dce5ef; padding: 20px; }
+        .sidebar h2 { font-size: 17px; margin-bottom: 14px; color: #2f4f68; }
+        .subject-list { list-style: none; }
+        .subject-list li { margin-bottom: 10px; }
+        .subject-list a { display: block; background-color: #fff; border: 1px solid #dce5ef; padding: 10px 12px; border-radius: 6px; cursor: pointer; }
+        .subject-list a:hover { background-color: #e7f3ff; }
+        #logoutBtn { margin-top: 20px; }
+        .content { padding: 22px; }
+        .welcome { margin-bottom: 18px; }
+        .welcome h2 { color: #2f4f68; margin-bottom: 6px; }
+        .sections { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 14px; }
+        .section-card { background-color: #fff; border: 1px solid #dce5ef; border-radius: 8px; padding: 14px; }
+        .section-card h3 { color: #2f4f68; margin-bottom: 8px; }
+        
+        /* Subject page */
+        .subject-page { max-width: 860px; margin: 28px auto; padding: 0 18px 30px; }
+        .subject-header { margin-bottom: 16px; }
+        .subject-header h1 { color: #2a5f8a; margin-bottom: 8px; }
+        .panel { background-color: #fff; border: 1px solid #dce5ef; border-radius: 8px; padding: 16px; margin-bottom: 14px; }
+        .panel h2 { color: #2f4f68; margin-bottom: 10px; }
+        .quiz-question { margin-bottom: 10px; font-weight: bold; }
+        .quiz-options label { display: block; margin-bottom: 7px; font-weight: normal; }
+        .top-link { display: inline-block; margin-bottom: 14px; color: #2a5f8a; font-weight: 600; cursor: pointer; }
+        .top-link:hover { text-decoration: underline; }
+        
+        @media (max-width: 800px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { border-right: none; border-bottom: 1px solid #dce5ef; }
+            .sections { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+    // ====================== Mock Backend (data stored in browser localStorage) ======================
+    let usersDB = JSON.parse(localStorage.getItem("study_users")) || [
+        { username: "student1", password: "123456" }
+    ];
+    
+    function saveUsers() { 
+        localStorage.setItem("study_users", JSON.stringify(usersDB)); 
+    }
+    
+    const subjectsList = [
+        { name: "Math" },
+        { name: "English" },
+        { name: "Science" }
+    ];
+    
+    // Mock fetch - intercepts API calls without changing original code structure
+    function mockFetch(url, options) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const method = options?.method || "GET";
+                const body = options?.body ? JSON.parse(options.body) : null;
+                
+                // Login endpoint
+                if (url === "http://localhost:3000/login" && method === "POST") {
+                    const user = usersDB.find(u => u.username === body.username && u.password === body.password);
+                    if (user) {
+                        resolve({ json: () => Promise.resolve({ success: true, message: "Login successful" }) });
+                    } else {
+                        resolve({ json: () => Promise.resolve({ success: false, message: "Invalid username or password" }) });
+                    }
+                    return;
+                }
+                
+                // Signup endpoint
+                if (url === "http://localhost:3000/signup" && method === "POST") {
+                    const exists = usersDB.find(u => u.username === body.username);
+                    if (exists) {
+                        resolve({ json: () => Promise.resolve({ success: false, message: "Username already exists" }) });
+                    } else {
+                        usersDB.push({ username: body.username, password: body.password });
+                        saveUsers();
+                        resolve({ json: () => Promise.resolve({ success: true, message: "Signup successful" }) });
+                    }
+                    return;
+                }
+                
+                // Subjects endpoint
+                if (url === "http://localhost:3000/subjects") {
+                    resolve({ json: () => Promise.resolve(subjectsList) });
+                    return;
+                }
+                
+                // Default fallback
+                resolve({ json: () => Promise.resolve({}) });
+            }, 100);
+        });
+    }
+    
+    // Override fetch
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options) {
+        if (typeof url === "string" && url.startsWith("http://localhost:3000")) {
+            return mockFetch(url, options);
+        }
+        return originalFetch.call(this, url, options);
+    };
+    
+    // ====================== OOP Classes (Your original code, unchanged) ======================
+    class User {
+        constructor(username) {
+            this.username = username;
+        }
+        
+        login(password) {
+            return fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: this.username, password }),
+            }).then(function (res) {
+                return res.json();
+            });
+        }
+        
+        displayWelcome() {
+            var el = document.getElementById("welcomeMessage");
+            if (el) {
+                el.textContent = "Welcome, " + this.username + "!";
+            }
+        }
+        
+        viewDashboard() {
+            var el = document.getElementById("dashboardView");
+            var label = "User Dashboard";
+            if (el) {
+                el.textContent = label;
+            }
+            return label;
+        }
+    }
+    
+    class Student extends User {
+        viewDashboard() {
+            var el = document.getElementById("dashboardView");
+            var label = "Student Dashboard";
+            if (el) {
+                el.textContent = label;
+            }
+            return label;
+        }
+    }
+    
+    // ====================== Page Router & Render Functions ======================
+    let currentView = "login"; // login, signup, dashboard, subject
+    
+    function renderApp() {
+        const app = document.getElementById("app");
+        const storedUser = localStorage.getItem("currentUser");
+        
+        if (storedUser && (currentView === "login" || currentView === "signup")) {
+            currentView = "dashboard";
+        }
+        
+        if (currentView === "login") {
+            app.innerHTML = getLoginHTML();
+            attachLoginEvents();
+        } 
+        else if (currentView === "signup") {
+            app.innerHTML = getSignupHTML();
+            attachSignupEvents();
+        }
+        else if (currentView === "dashboard") {
+            const username = localStorage.getItem("currentUser");
+            if (!username) {
+                currentView = "login";
+                renderApp();
+                return;
+            }
+            app.innerHTML = getDashboardHTML();
+            attachDashboardEvents(username);
+        }
+        else if (currentView === "subject") {
+            const subjectName = localStorage.getItem("currentSubject") || "Math";
+            app.innerHTML = getSubjectHTML(subjectName);
+            attachSubjectEvents();
+        }
+    }
+    
+    function getLoginHTML() {
+        return `
+            <main class="page-center">
+                <section class="card">
+                    <h1>Login</h1>
+                    <form id="loginForm" autocomplete="off">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" placeholder="Enter username" />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="Enter password" />
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                    <p class="auth-link">
+                        Don't have an account? <a id="goToSignup">Sign Up</a>
+                    </p>
+                </section>
+            </main>
+        `;
+    }
+    
+    function getSignupHTML() {
+        return `
+            <main class="page-center">
+                <section class="card">
+                    <h1>Sign Up</h1>
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <label for="signupUsername">Username</label>
+                            <input type="text" id="signupUsername" />
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <input type="password" id="signupPassword" />
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" />
+                        </div>
+                        <button type="submit" class="btn">Sign Up</button>
+                    </form>
+                    <p class="auth-link">
+                        Already have an account? <a id="goToLogin">Login</a>
+                    </p>
+                </section>
+            </main>
+        `;
+    }
+    
+    function getDashboardHTML() {
+        return `
+            <header class="navbar"><h1>Study Platform</h1></header>
+            <main class="layout">
+                <aside class="sidebar">
+                    <h2>Subjects</h2>
+                    <div id="subjects">Loading...</div>
+                    <button id="logoutBtn" class="btn">Logout</button>
+                </aside>
+                <section class="content">
+                    <div class="welcome">
+                        <p id="dashboardView"></p>
+                        <h2 id="welcomeMessage">Welcome!</h2>
+                        <p>Choose a subject from the left menu and continue your learning journey.</p>
+                    </div>
+                    <div class="sections">
+                        <article class="section-card"><h3>Progress</h3><p>You completed 5 lessons this week and 2 quizzes.</p></article>
+                        <article class="section-card"><h3>Weak Subjects</h3><p>Math: Fractions and Algebra need more revision.</p></article>
+                        <article class="section-card"><h3>Recommended Topics</h3><p>Try Grammar Basics, Reading Practice, and Word Problems.</p></article>
+                    </div>
+                </section>
+            </main>
+        `;
+    }
+    
+    function getSubjectHTML(subjectName) {
+        return `
+            <main class="subject-page">
+                <a class="top-link" id="backToDashboard">← Back to Dashboard</a>
+                <header class="subject-header">
+                    <h1>${escapeHtml(subjectName)}</h1>
+                    <p>Focus on understanding core ideas with small daily practice sessions.</p>
+                </header>
+                <section class="panel">
+                    <h2>Study Material</h2>
+                    <p>Fractions represent parts of a whole. To add fractions, first make sure they have a common denominator. Then add the numerators and keep the denominator the same. Always simplify the result if possible.</p>
+                </section>
+                <section class="panel">
+                    <h2>Quick Quiz</h2>
+                    <p class="quiz-question">What is 1/2 + 1/4 ?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="quiz" value="2/6" /> 2/6</label>
+                        <label><input type="radio" name="quiz" value="3/4" /> 3/4</label>
+                        <label><input type="radio" name="quiz" value="1/8" /> 1/8</label>
+                        <button id="submitQuizBtn" class="btn" style="margin-top:10px;">Submit</button>
+                        <p id="quizResult" style="margin-top:10px;"></p>
+                    </div>
+                </section>
+            </main>
+        `;
+    }
+    
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function attachLoginEvents() {
+        const form = document.getElementById("loginForm");
+        const goSignup = document.getElementById("goToSignup");
+        
+        if (form) {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const username = document.getElementById("username").value.trim();
+                const password = document.getElementById("password").value;
+                const student = new Student(username);
+                const data = await student.login(password);
+                if (data.success) {
+                    localStorage.setItem("currentUser", username);
+                    currentView = "dashboard";
+                    renderApp();
+                } else {
+                    alert("Login failed: " + (data.message || "Invalid username or password"));
+                }
+            });
+        }
+        if (goSignup) {
+            goSignup.addEventListener("click", () => { 
+                currentView = "signup"; 
+                renderApp(); 
+            });
+        }
+    }
+    
+    function attachSignupEvents() {
+        const form = document.getElementById("signupForm");
+        const goLogin = document.getElementById("goToLogin");
+        
+        if (form) {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const username = document.getElementById("signupUsername").value.trim();
+                const password = document.getElementById("signupPassword").value;
+                const confirm = document.getElementById("confirmPassword").value;
+                
+                if (password !== confirm) {
+                    alert("Passwords do not match!");
+                    return;
+                }
+                
+                const res = await fetch("http://localhost:3000/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert("Sign up successful! Please login.");
+                    currentView = "login";
+                    renderApp();
+                } else {
+                    alert("Signup failed: " + data.message);
+                }
+            });
+        }
+        if (goLogin) {
+            goLogin.addEventListener("click", () => { 
+                currentView = "login"; 
+                renderApp(); 
+            });
+        }
+    }
+    
+    function attachDashboardEvents(username) {
+        const student = new Student(username);
+        student.displayWelcome();
+        student.viewDashboard();
+        
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                localStorage.removeItem("currentUser");
+                currentView = "login";
+                renderApp();
+            });
+        }
+        
+        // Load subjects
+        fetch("http://localhost:3000/subjects")
+            .then(res => res.json())
+            .then(data => {
+                const subjects = Array.isArray(data) ? data : [];
+                const container = document.getElementById("subjects");
+                if (container) {
+                    if (subjects.length === 0) {
+                        container.innerHTML = "<p>No subjects available</p>";
+                        return;
+                    }
+                    const ul = document.createElement("ul");
+                    ul.className = "subject-list";
+                    subjects.forEach(sub => {
+                        const name = sub.name || sub.subject_name || "Subject";
+                        const li = document.createElement("li");
+                        const a = document.createElement("a");
+                        a.textContent = name;
+                        a.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            localStorage.setItem("currentSubject", name);
+                            currentView = "subject";
+                            renderApp();
+                        });
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    });
+                    container.innerHTML = "";
+                    container.appendChild(ul);
+                }
+            })
+            .catch(() => {
+                const container = document.getElementById("subjects");
+                if (container) container.innerHTML = "<p>Failed to load subjects</p>";
+            });
+    }
+    
+    function attachSubjectEvents() {
+        const backBtn = document.getElementById("backToDashboard");
+        if (backBtn) {
+            backBtn.addEventListener("click", () => {
+                currentView = "dashboard";
+                renderApp();
+            });
+        }
+        
+        const submitBtn = document.getElementById("submitQuizBtn");
+        if (submitBtn) {
+            submitBtn.addEventListener("click", () => {
+                const selected = document.querySelector('input[name="quiz"]:checked');
+                const resultP = document.getElementById("quizResult");
+                if (!selected) {
+                    resultP.innerHTML = "⚠️ Please select an answer";
+                    resultP.style.color = "orange";
+                    return;
+                }
+                if (selected.value === "3/4") {
+                    resultP.innerHTML = "✅ Correct! 1/2 + 1/4 = 3/4";
+                    resultP.style.color = "green";
+                } else {
+                    resultP.innerHTML = "❌ Incorrect. The correct answer is 3/4";
+                    resultP.style.color = "red";
+                }
+            });
+        }
+    }
+    
+    // Start the app
+    renderApp();
+</script>
+</body>
+</html>
