@@ -5,61 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Study Platform - My Project</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        body { background-color: #f4f8fc; color: #333; }
-        a { color: inherit; text-decoration: none; }
-        
-        /* Login / Signup cards */
-        .page-center { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .card { background-color: #fff; width: 100%; max-width: 380px; padding: 28px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .card h1 { text-align: center; margin-bottom: 20px; font-size: 24px; color: #2a5f8a; }
-        .form-group { margin-bottom: 14px; }
-        label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 10px 12px; border: 1px solid #cfd8e3; border-radius: 6px; }
-        .btn { display: inline-block; width: 100%; padding: 10px 12px; border: none; border-radius: 6px; background-color: #9fd3fb; color: #183247; font-weight: 700; cursor: pointer; text-align: center; }
-        .btn:hover { background-color: #8bc5f1; }
-        .auth-link { margin-top: 14px; text-align: center; font-size: 14px; color: #4a5f72; }
-        .auth-link a { color: #2a5f8a; font-weight: 600; cursor: pointer; }
-        
-        /* Dashboard layout */
-        .navbar { height: 60px; background-color: #fff; border-bottom: 1px solid #dce5ef; display: flex; align-items: center; padding: 0 20px; }
-        .navbar h1 { font-size: 22px; color: #2a5f8a; }
-        .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 60px); }
-        .sidebar { background-color: #eef4fa; border-right: 1px solid #dce5ef; padding: 20px; }
-        .sidebar h2 { font-size: 17px; margin-bottom: 14px; color: #2f4f68; }
-        .subject-list { list-style: none; }
-        .subject-list li { margin-bottom: 10px; }
-        .subject-list a { display: block; background-color: #fff; border: 1px solid #dce5ef; padding: 10px 12px; border-radius: 6px; cursor: pointer; }
-        .subject-list a:hover { background-color: #e7f3ff; }
-        #logoutBtn { margin-top: 20px; }
-        .content { padding: 22px; }
-        .welcome { margin-bottom: 18px; }
-        .welcome h2 { color: #2f4f68; margin-bottom: 6px; }
-        .sections { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 14px; }
-        .section-card { background-color: #fff; border: 1px solid #dce5ef; border-radius: 8px; padding: 14px; }
-        .section-card h3 { color: #2f4f68; margin-bottom: 8px; }
-        
-        /* Subject page */
-        .subject-page { max-width: 860px; margin: 28px auto; padding: 0 18px 30px; }
-        .subject-header { margin-bottom: 16px; }
-        .subject-header h1 { color: #2a5f8a; margin-bottom: 8px; }
-        .panel { background-color: #fff; border: 1px solid #dce5ef; border-radius: 8px; padding: 16px; margin-bottom: 14px; }
-        .panel h2 { color: #2f4f68; margin-bottom: 10px; }
-        .quiz-question { margin-bottom: 10px; font-weight: bold; }
-        .quiz-options label { display: block; margin-bottom: 7px; font-weight: normal; }
-        .top-link { display: inline-block; margin-bottom: 14px; color: #2a5f8a; font-weight: 600; cursor: pointer; }
-        .top-link:hover { text-decoration: underline; }
-        
-        @media (max-width: 800px) {
-            .layout { grid-template-columns: 1fr; }
-            .sidebar { border-right: none; border-bottom: 1px solid #dce5ef; }
-            .sections { grid-template-columns: 1fr; }
-        }
+       /* ========== UI ENHANCEMENT ========== */
+body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%) !important;
+}
+.card:hover, .panel:hover, .section-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15) !important;
+}
+.subject-list li:nth-child(1) a::before { content: "📐 "; }
+.subject-list li:nth-child(2) a::before { content: "📖 "; }
+.subject-list li:nth-child(3) a::before { content: "🔬 "; }
+.subject-list a {
+    font-weight: 600 !important;
+    border-left: 3px solid transparent !important;
+}
+.subject-list a:hover {
+    border-left-color: #3b82f6 !important;
+    background: #f1f5f9 !important;
+    transform: translateX(4px) !important;
+}
+.btn {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+.btn:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35) !important;
+}
+.quiz-options label {
+    background: #f8fafc !important;
+    padding: 10px 14px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+.quiz-options label:hover {
+    background: #eef2ff !important;
+    border-color: #3b82f6 !important;
+}
+#dashboardView {
+    background: #dbeafe !important;
+    display: inline-block !important;
+    padding: 4px 14px !important;
+    border-radius: 30px !important;
+}
+.subject-header::after {
+    content: "✨ \"The only way to learn mathematics is to do mathematics.\" — Paul Halmos";
+    display: block !important;
+    font-size: 12px !important;
+    color: #475569 !important;
+    font-style: italic !important;
+    margin-top: 12px !important;
+    padding-top: 10px !important;
+    border-top: 1px dashed #cbd5e1 !important;
+}
     </style>
     <link rel="stylesheet" href="ui-enhance.css" />
 </head>
