@@ -1,0 +1,82 @@
+/* 只美化视觉，不改布局和功能 */
+
+/* 渐变背景 */
+body {
+    background: linear-gradient(135deg, #f4f8fc 0%, #e2e8f0 100%);
+}
+
+/* 卡片悬浮效果 */
+.card, .panel, .section-card {
+    transition: all 0.25s ease;
+    border-radius: 16px;
+}
+
+.card:hover, .panel:hover, .section-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.1);
+}
+
+/* 科目图标（只加图标，不改文字） */
+.subject-list li:nth-child(1) a::before { content: "📐 "; }
+.subject-list li:nth-child(2) a::before { content: "📖 "; }
+.subject-list li:nth-child(3) a::before { content: "🔬 "; }
+
+/* 科目悬浮效果 */
+.subject-list a {
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.subject-list a:hover {
+    border-left-color: #3b82f6;
+    background-color: #f1f5f9;
+    transform: translateX(4px);
+}
+
+/* 按钮美化 */
+.btn {
+    background: #3b82f6;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background: #2563eb;
+    transform: scale(1.01);
+    box-shadow: 0 4px 10px rgba(59,130,246,0.3);
+}
+
+/* 测验选项美化 */
+.quiz-options label {
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+}
+
+.quiz-options label:hover {
+    background: #eef2ff;
+    border-color: #3b82f6;
+}
+
+/* 仪表板欢迎标签 */
+#dashboardView {
+    background: #dbeafe;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+/* 科目页名言（只加一行字，不动其他） */
+.subject-header::after {
+    content: "✨ “Mathematics is not about numbers, but understanding.”";
+    display: block;
+    font-size: 12px;
+    color: #475569;
+    margin-top: 8px;
+    font-style: italic;
+}
