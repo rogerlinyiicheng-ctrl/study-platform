@@ -60,25 +60,45 @@
             .sidebar { border-right: none; border-bottom: 1px solid #dce5ef; }
             .sections { grid-template-columns: 1fr; }
         }
-         /* ========== UI ENHANCEMENT (visual only, no layout change) ========== */
+               /* ========== DARK MODE UI ENHANCEMENT ========== */
 
-        /* 1. Gradient background */
+        /* 1. Dark gradient background */
         body {
-            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%) !important;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+            color: #e2e8f0 !important;
         }
 
-        /* 2. Card hover effects */
+        /* 2. Cards - dark style */
         .panel, .section-card, .card {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
             transition: all 0.25s ease !important;
             border-radius: 16px !important;
+            color: #e2e8f0 !important;
         }
 
         .panel:hover, .section-card:hover {
             transform: translateY(-3px) !important;
-            box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.5) !important;
         }
 
-        /* 3. Subject icons + hover effect */
+        /* 3. Subject list - dark */
+        .subject-list a {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+            transition: all 0.2s !important;
+            border-left: 3px solid transparent !important;
+            border-radius: 8px !important;
+        }
+
+        .subject-list a:hover {
+            border-left-color: #3b82f6 !important;
+            background-color: #1e293b !important;
+            transform: translateX(4px) !important;
+        }
+
+        /* 4. Subject icons */
         .subject-list li:nth-child(1) a::before {
             content: "📐 " !important;
         }
@@ -89,19 +109,30 @@
             content: "🔬 " !important;
         }
 
-        .subject-list a {
-            transition: all 0.2s !important;
-            border-left: 3px solid transparent !important;
-            border-radius: 8px !important;
+        /* 5. Sidebar - dark */
+        .sidebar {
+            background-color: #0f172a !important;
+            border-right-color: #334155 !important;
+        }
+        .sidebar h2 {
+            color: #94a3b8 !important;
         }
 
-        .subject-list a:hover {
-            border-left-color: #3b82f6 !important;
-            background-color: #eff6ff !important;
-            transform: translateX(4px) !important;
+        /* 6. Navbar - dark */
+        .navbar {
+            background-color: #0f172a !important;
+            border-bottom-color: #334155 !important;
+        }
+        .navbar h1 {
+            color: #60a5fa !important;
         }
 
-        /* 4. Button gradient */
+        /* 7. Headers text */
+        .subject-header h1, .panel h2, .section-card h3, .welcome h2 {
+            color: #60a5fa !important;
+        }
+
+        /* 8. Button - neon blue */
         .btn {
             background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
             color: white !important;
@@ -112,62 +143,86 @@
 
         .btn:hover {
             transform: scale(1.02) !important;
-            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.35) !important;
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.5) !important;
             background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
         }
 
-        /* 5. Quiz options as cards */
+        /* 9. Quiz options - dark cards */
         .quiz-options label {
-            background: #f8fafc !important;
+            background: #0f172a !important;
             padding: 10px 14px !important;
             border-radius: 12px !important;
-            border: 1px solid #e2e8f0 !important;
+            border: 1px solid #334155 !important;
             transition: all 0.15s !important;
             display: flex !important;
             align-items: center !important;
             gap: 10px !important;
             cursor: pointer !important;
+            color: #e2e8f0 !important;
         }
 
         .quiz-options label:hover {
-            background: #eef2ff !important;
+            background: #1e293b !important;
             border-color: #3b82f6 !important;
             transform: translateX(4px) !important;
         }
 
-        /* 6. Dashboard welcome badge */
+        /* 10. Dashboard welcome badge */
         #dashboardView {
-            background: #dbeafe !important;
+            background: #3b82f6 !important;
             display: inline-block !important;
             padding: 6px 16px !important;
             border-radius: 30px !important;
             font-size: 0.8rem !important;
             font-weight: 600 !important;
-            color: #1e40af !important;
+            color: white !important;
         }
 
-        /* 7. Quote on subject page */
+        /* 11. Quote on subject page */
         .subject-header::after {
             content: "✨ \"The only way to learn mathematics is to do mathematics.\" — Paul Halmos" !important;
             display: block !important;
             font-size: 12px !important;
-            color: #475569 !important;
+            color: #94a3b8 !important;
             font-style: italic !important;
             margin-top: 10px !important;
             padding-top: 8px !important;
-            border-top: 1px dashed #cbd5e1 !important;
+            border-top: 1px dashed #475569 !important;
         }
 
-        /* 8. Custom scrollbar */
+        /* 12. Input fields - dark */
+        input[type="text"], input[type="password"] {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+        input[type="text"]::placeholder, input[type="password"]::placeholder {
+            color: #64748b !important;
+        }
+
+        /* 13. Links */
+        .auth-link, .top-link {
+            color: #94a3b8 !important;
+        }
+        .auth-link a, .top-link {
+            color: #60a5fa !important;
+        }
+
+        /* 14. Progress section text */
+        .section-card p {
+            color: #cbd5e1 !important;
+        }
+
+        /* 15. Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px !important;
         }
         ::-webkit-scrollbar-track {
-            background: #e2e8f0 !important;
+            background: #0f172a !important;
             border-radius: 10px !important;
         }
         ::-webkit-scrollbar-thumb {
-            background: #94a3b8 !important;
+            background: #475569 !important;
             border-radius: 10px !important;
         }
         ::-webkit-scrollbar-thumb:hover {
